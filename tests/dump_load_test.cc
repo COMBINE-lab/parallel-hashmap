@@ -12,13 +12,15 @@ TEST(DumpLoad, FlatHashSet_uint32) {
     phmap::flat_hash_set<uint32_t> st1 = { 1991, 1202 };
 
     {
-        phmap::BinaryOutputArchive ar_out("./dump.data");
+        std::ofstream ofile("./dump.data", std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+        phmap::BinaryOutputArchive ar_out(std::move(ofile));
         EXPECT_TRUE(st1.phmap_dump(ar_out));
     }
 
     phmap::flat_hash_set<uint32_t> st2;
     {
-        phmap::BinaryInputArchive ar_in("./dump.data");
+        std::ifstream ifile("./dump.data", std::ofstream::in | std::ofstream::binary);
+        phmap::BinaryInputArchive ar_in(std::move(ifile));
         EXPECT_TRUE(st2.phmap_load(ar_in));
     }
     EXPECT_TRUE(st1 == st2);
